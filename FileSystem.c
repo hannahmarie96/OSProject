@@ -8,6 +8,7 @@
 
 int seatStatus[150];
 int writingLock = 0;
+int reciptLock =0;
 char openName[150][30];
 char openDOB[150][10];
 char openGender[150][10];
@@ -105,7 +106,7 @@ void newFlight(int flightDate){
 	fputs("\n", fptr);
 	fclose(fptr);
 }
-//IN PROGRESS
+//Complete DAP
 void openFlight(int flightDate){
 	FILE *fptr;
    
@@ -114,7 +115,7 @@ void openFlight(int flightDate){
 	char filename[] = "./";
 	strcat(filename, s);
 	strcat(filename, ".txt");
-    fptr = fopen("102020.txt", "rb+");
+    fptr = fopen("102020.txt", "r");
 	char delimiter[200];
 	fgets(delimiter,200,fptr);
 	char data[200];
@@ -143,14 +144,82 @@ void openFlight(int flightDate){
 	fclose(fptr);
 }
 
+//Complete DAP
+//simple helper function to convert date string into int
+int date2int(char date[15]){
+	char *buffer = NULL; 
+	buffer = strtok(date, "/");
+	int month = atoi(buffer);
+	buffer = strtok(NULL, "/");
+	int day = atoi(buffer);
+	buffer = strtok(NULL, "\0");
+	int year = atoi(buffer)%100;
+	int output = month * 10000 + day * 100 + year;
+	return output;
+}
+//Inprogress
+void makeReservation(int flightDate, int reservations){
+	while(writingLock==1){;}
+	writingLock=1;
+	openFlight(flightDate);
+	
+	writingLock=0;
+	
+	while(reciptLock==1){;}
+	reciptLock =1;
+	makeRecipt(transactionNo,);
+}
 
-void makeReservation(int flightDate, char* customerName, char* customerDoB, char customerGender, int customerIDno){
 
+//Mostly complete DAP --needs tested
+void makeRecipt(int transactionNo, char customerEmail[30], char customerPhone[15], char customerName[30], char customerDOB[15], char customerGender[10], char customerID[10], char flightDate[15], char seatNumber[5]){
+	FILE *fptr;
+	char s[20];
+	sprintf(s, "%d", transactionNo);
+	char filename[] = "./";
+	strcat(filename, s);
+	strcat(filename, ".txt");
+	fptr = fopen(filename, "w+");
+	
+	if(fptr == NULL){
+		printf("Error Creating Recipt.");
+	}
+	else{
+	fputs("&\n", fptr);
+	fprintf(fptr, "%d\n", transactionNo);
+	fprintf(fptr, "%s\n", customerEmail);
+	fprintf(fptr, "%s\n", customerPhone);
+	fprintf(fptr, "%s\n", customerName);
+	fprintf(fptr, "%s\n", customerDOB);
+	fprintf(fptr, "%s\n", customerGender);
+	fprintf(fptr, "%s\n", customerID);
+	fprintf(fptr, "%s\n", flightDate);
+	fprintf(fptr, "%s\n", seatNumber);
+	fclose(fptr);
+	}
+}
+
+
+//mostly complete DAP -- needs testing
+void appendRecipt(int transactionNo, char customerName[30], char customerDOB[15], char customerGender[10], char customerID[10], char flightDate[15], char seatNumber[5]){
+	FILE *fptr;
+	char s[20];
+	sprintf(s, "%d", transactionNo);
+	char filename[] = "./";
+	strcat(filename, s);
+	strcat(filename, ".txt");
+	fptr = fopen(filename, "a");
+	fprintf(fptr, "%s\n", customerName);
+	fprintf(fptr, "%s\n", customerDOB);
+	fprintf(fptr, "%s\n", customerGender);
+	fprintf(fptr, "%s\n", customerID);
+	fprintf(fptr, "%s\n", flightDate);
+	fprintf(fptr, "%s\n", seatNumber);
+	fputs("&\n", fptr);
 }
 
 
 void modifyReservation(int transactionNo){
-	
 	
 }
 
@@ -160,12 +229,8 @@ void cancelReservation(int transactionNo){
 }
 
 //Used only for testing.
-int main()
-{
+int main(){
 	//flight number is based on 6 number date
-    openFlight(102020);
-	
-	printSeats();
-	
+
     return EXIT_SUCCESS;
 }
