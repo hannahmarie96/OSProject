@@ -16,7 +16,7 @@ char openID[150][10];
 //stored receipt information
 char receiptEmail[30];
 char receiptPhone[12];
-char receiptSeats[150];
+char receiptSeats[150][5];
 char receiptName[150][30];
 char receiptDOB[150][10];
 char receiptGender[150][10];
@@ -134,22 +134,22 @@ void openReceipt(int transactionNo){
 			}
 			//Name
 			fgets(data, 200, fptr);
-			strcpy(receiptName[loop], data)
+			strcpy(receiptName[loop], data);
 			//DoB
 			fgets(data, 200, fptr);
-			strcpy(receiptDOB[loop], data)
+			strcpy(receiptDOB[loop], data);
 			//Gender
 			fgets(data, 200, fptr);
 			strcpy(receiptGender[loop], data);
 			//Government ID
 			fgets(data, 200, fptr);
-			strcpy(receiptID[loop], data)
+			strcpy(receiptID[loop], data);
 			//Flight Date
 			fgets(data, 200, fptr);
-			strcpy(receiptFlights[loop], data)
+			strcpy(receiptFlights[loop], data);
 			//Seat Number
 			fgets(data, 200, fptr);
-			strcpy(receiptSeats[loop], data)
+			strcpy(receiptSeats[loop], data);
 			//delimiter
 			fgets(data, 200, fptr);
 			loop++;
@@ -191,7 +191,7 @@ void makeReceipt(int transactionNo, char* customerEmail, char* customerPhone, ch
 
 //Used to add additional Customers to the receipt after primary contact
 //mostly complete DAP -- needs testing
-void appendReceipt(int transactionNo, char* customerName, char* customerDOB*, char* customerGender, char* customerID, char flightDate*, char* seatNumber){
+void appendReceipt(int transactionNo, char* customerName, char* customerDOB, char* customerGender, char* customerID, char* flightDate, char* seatNumber){
 	FILE *fptr;
 	char s[20];
 	sprintf(s, "%d", transactionNo);
@@ -330,9 +330,9 @@ void modifyReservation(int transactionNo, int customerNo){
 	receiptLock = 1; 
 	writingLock = 1;
 	
-	openRecipt(transactionNo);
+	openReceipt(transactionNo);
 	int flightDate = atoi(receiptFlights[customerNo]);
-	int seatNumber = atoi(receiptSeats[customerNo])
+	int seatNumber = atoi(receiptSeats[customerNo]);
 	openFlight(flightDate);
 	
 	strcpy(openName[seatNumber], receiptName[customerNo]);
@@ -342,7 +342,7 @@ void modifyReservation(int transactionNo, int customerNo){
 	
 	writeFlight(flightDate);
 	receiptLock=0;
-	WritingLock=0;
+	writingLock=0;
 
 }
 
@@ -353,28 +353,38 @@ void cancelReservation(int transactionNo){
 	receiptLock = 1; 
 	writingLock = 1;
 	
-	openRecipt(transactionNo);
-	int flightDate = atoi(receiptFlights[customerNo]);
+	openReceipt(transactionNo);
+	int flightDate;
 	int seatNumber;
 	openFlight(flightDate);
+	int i =0;
 	while(seatNumber>0){
-		seatNumber = atoi(receiptSeats[i])
+		if(i=0){
+			flightDate = atoi(receiptFlights[i]);
+			openFlight(flightDate);
+		}
+		else if(strcmp(receiptFlights[i], receiptFlights[i-1])!=0){
+			flightDate = atoi(receiptFlights[i]);
+			openFlight(flightDate);
+		}
+		seatNumber = atoi(receiptSeats[i]);
 		//empties values of 
 		strcpy(openName[seatNumber], "\n");
 		strcpy(openDOB[seatNumber], "\n");
 		strcpy(openGender[seatNumber], "\n");
 		strcpy(openID[seatNumber], "\n");
+		i++;
 	}
 	writeFlight(flightDate);
-	WritingLock=0;
+	writingLock=0;
 	//possibly add a wipe function later
 	//clearReceipt(transactionID);
 	receiptLock=0;
 }
 
 //Used only for testing.
-/*int main(){
+int main(){
 	//flight number is based on 6 number date
 
     return EXIT_SUCCESS;
-}*/
+}
