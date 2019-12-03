@@ -9,9 +9,9 @@
 int seatStatus[150];
 int writingLock = 0;
 char openName[150][30];
-char openDOB[1500];
-char openGender[1500];
-char openID[1500];
+char openDOB[150][10];
+char openGender[150][10];
+char openID[1500][10];
 
 //Complete DAP
 void printSeats(){
@@ -124,19 +124,18 @@ void openFlight(int flightDate){
 		fgets(data, 200, fptr); //seat number
 		seatNumber = atoi(data)-1;
 		fgets(data, 200, fptr);	//name
-		//*(openName+(seatNumber-1)*20) = *data;
-		
+		strcpy(openName[seatNumber], data);
 		if(strcmp(data, "\n")==0){seatStatus[seatNumber]=0;}
 		else{seatStatus[seatNumber]=1;}
 		
 		fgets(data, 200, fptr); //DoB
-		//*(openDOB+seatNumber*8) = *data;
+		strcpy(openDOB[seatNumber], data);
 		
 		fgets(data, 200, fptr);	//Gender
-		//*(openGender+seatNumber*8) = *data;
+		strcpy(openGender[seatNumber], data);
 		
 		fgets(data, 200, fptr);	//ID
-		//*(openID+seatNumber*8) = *data;
+		strcpy(openID[seatNumber], data);
 		
 		fgets(data, 200, fptr); //delimiter
 	}
@@ -156,18 +155,17 @@ void modifyReservation(int transactionNo){
 }
 
 
-void cancelReservation(){
+void cancelReservation(int transactionNo){
 	
 }
 
 //Used only for testing.
 int main()
 {
+	//flight number is based on 6 number date
     openFlight(102020);
 	
 	printSeats();
-	
-	//printf("\n%s ", openName[0][0]);
 	
     return EXIT_SUCCESS;
 }
